@@ -388,8 +388,20 @@ public class SpaceShooterGame : MonoBehaviour
         pickup.Initialize(type, position);
     }
 
+    private void ClearArenaForBoss()
+    {
+        // Clean up regular enemies, hazards, and projectiles so the Boss fight is focused.
+        foreach (EnemyController item in FindObjectsOfType<EnemyController>())
+            Destroy(item.gameObject);
+        foreach (AsteroidController item in FindObjectsOfType<AsteroidController>())
+            Destroy(item.gameObject);
+        foreach (BulletController item in FindObjectsOfType<BulletController>())
+            Destroy(item.gameObject);
+    }
+
     private void SpawnBoss()
     {
+        ClearArenaForBoss();
         GameObject bossObject = new GameObject("Boss Level " + currentLevel);
         bossObject.transform.position = new Vector3(0f, 3.15f, 0f);
         bossObject.transform.localScale = new Vector3(1.8f, 1.35f, 1f);
