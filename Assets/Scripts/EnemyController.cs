@@ -15,7 +15,8 @@ public class EnemyController : MonoBehaviour
         level = currentLevel;
         health = 20f + currentLevel * 5f;
         moveSpeed = 1.35f + currentLevel * 0.12f;
-        fireTimer = Random.Range(1.2f, 2.4f);
+        // EASY MODE: give the player more time between enemy volleys.
+        fireTimer = Random.Range(2.5f, 3.8f);
         waveOffset = Random.Range(0f, 6.28f);
         scoreValue = 100 + currentLevel * 20;
     }
@@ -35,7 +36,7 @@ public class EnemyController : MonoBehaviour
         if (fireTimer <= 0f)
         {
             FireAtPlayer();
-            fireTimer = Random.Range(1.7f, 2.6f) - Mathf.Min(0.6f, level * 0.06f);
+            fireTimer = Random.Range(3.1f, 4.1f) - Mathf.Min(0.4f, level * 0.04f);
         }
 
         if (transform.position.y < SpaceShooterGame.Instance.WorldBottom - 1f)
@@ -53,7 +54,7 @@ public class EnemyController : MonoBehaviour
             direction = Vector2.down;
 
         BulletController.Create((Vector2)transform.position + direction.normalized * 0.34f,
-            direction, BulletController.BulletOwner.Enemy, 20f, 3.2f + level * 0.12f);
+            direction, BulletController.BulletOwner.Enemy, 20f, 2.7f + level * 0.08f);
     }
 
     public void TakeDamage(float damage)
