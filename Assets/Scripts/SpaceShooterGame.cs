@@ -543,7 +543,7 @@ public class SpaceShooterGame : MonoBehaviour
             case ScreenState.Victory: DrawVictory(); break;
         }
 
-        if (notificationRemaining > 0f && CurrentState != ScreenState.MainMenu && CurrentState != ScreenState.Paused)
+        if (notificationRemaining > 0f && IsGameplayActive)
         {
             Rect notifyRect = new Rect(Screen.width * 0.5f - 230f, 80f, 460f, 42f);
             GUI.Label(notifyRect, notification, subtitleStyle);
@@ -755,7 +755,11 @@ public class SpaceShooterGame : MonoBehaviour
         Time.timeScale = 1f;
         currentLevel++;
         if (Player != null)
+        {
             Player.Heal(30);
+            // Clear temporary effects while preserving the upgraded weapon and healed HP.
+            Player.ResetForLevel(Player.Health, Player.WeaponLevel);
+        }
         BeginLevel();
         Notify("LEVEL " + currentLevel + " — " + LevelNameForLevel(currentLevel));
     }
