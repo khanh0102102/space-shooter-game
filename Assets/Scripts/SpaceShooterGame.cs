@@ -133,7 +133,7 @@ public class SpaceShooterGame : MonoBehaviour
             Color starColor = Random.value > 0.82f
                 ? new Color(0.35f, 0.75f, 1f)
                 : new Color(0.72f, 0.83f, 1f);
-            renderer.sprite = SpriteFactory.Circle(starColor, "space-star");
+            renderer.sprite = SpriteFactory.Circle(starColor);
             renderer.sortingOrder = -100;
 
             StarfieldController controller = star.AddComponent<StarfieldController>();
@@ -244,6 +244,7 @@ public class SpaceShooterGame : MonoBehaviour
 
         Rigidbody2D body = playerObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
 
         CircleCollider2D collider = playerObject.AddComponent<CircleCollider2D>();
@@ -333,6 +334,7 @@ public class SpaceShooterGame : MonoBehaviour
 
         Rigidbody2D body = enemyObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
 
         CircleCollider2D collider = enemyObject.AddComponent<CircleCollider2D>();
@@ -356,6 +358,7 @@ public class SpaceShooterGame : MonoBehaviour
 
         Rigidbody2D body = asteroidObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
 
         CircleCollider2D collider = asteroidObject.AddComponent<CircleCollider2D>();
@@ -378,6 +381,7 @@ public class SpaceShooterGame : MonoBehaviour
 
         Rigidbody2D body = pickupObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
 
         CircleCollider2D collider = pickupObject.AddComponent<CircleCollider2D>();
@@ -412,6 +416,7 @@ public class SpaceShooterGame : MonoBehaviour
 
         Rigidbody2D body = bossObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
 
         BoxCollider2D collider = bossObject.AddComponent<BoxCollider2D>();
