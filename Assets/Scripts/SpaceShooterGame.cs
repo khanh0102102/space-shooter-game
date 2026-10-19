@@ -24,7 +24,25 @@ public class SpaceShooterGame : MonoBehaviour
     public float WorldBottom => -WorldTop;
 
     private const int MaxLevels = 5;
-    private static readonly int[] ScoreGoals = { 1000, 2000, 3500, 5000, 7000 };
+
+    // EASY MODE: Tune the settings in this block to adjust overall difficulty.
+    // Lower score goals bring each level's Boss in sooner.
+    private static readonly int[] ScoreGoals = { 600, 1100, 1700, 2300, 3000 };
+
+    // Seconds between enemy spawns. Higher values mean fewer enemies.
+    private const float EnemySpawnIntervalBase = 2.25f;
+    private const float EnemySpawnIntervalPerLevel = 0.12f;
+    private const float EnemySpawnIntervalMinimum = 1.65f;
+
+    // Asteroids spawn less often than enemies.
+    private const float AsteroidSpawnIntervalMinimum = 4.0f;
+    private const float AsteroidSpawnIntervalMaximum = 5.5f;
+
+    // Health pickups and positive drops appear more often to help the player.
+    private const float PickupSpawnIntervalMinimum = 5.5f;
+    private const float PickupSpawnIntervalMaximum = 8.0f;
+    private const float PickupSpawnChance = 0.90f;
+    private const float EnemyPickupDropChance = 0.40f;
     private static readonly string[] LevelNames =
     {
         "Outer Space", "Asteroid Belt", "Alien Patrol", "Deep Space", "Enemy Stronghold"
@@ -171,22 +189,22 @@ public class SpaceShooterGame : MonoBehaviour
             if (enemySpawnTimer <= 0f)
             {
                 SpawnEnemy();
-                enemySpawnTimer = Mathf.Max(0.48f, 1.45f - currentLevel * 0.13f);
+                enemySpawnTimer = Mathf.Max(EnemySpawnIntervalMinimum, EnemySpawnIntervalBase - currentLevel * EnemySpawnIntervalPerLevel);
             }
 
             asteroidSpawnTimer -= Time.deltaTime;
             if (asteroidSpawnTimer <= 0f)
             {
                 SpawnAsteroid();
-                asteroidSpawnTimer = Random.Range(2.1f, 3.5f) - Mathf.Min(0.7f, currentLevel * 0.08f);
+                asteroidSpawnTimer = Random.Range(AsteroidSpawnIntervalMinimum, AsteroidSpawnIntervalMaximum) - Mathf.Min(0.35f, currentLevel * 0.04f);
             }
 
             pickupSpawnTimer -= Time.deltaTime;
             if (pickupSpawnTimer <= 0f)
             {
-                if (Random.value < 0.72f)
+                if (Random.value < PickupSpawnChance)
                     SpawnPickup((PickupType)Random.Range(0, 8), new Vector2(Random.Range(-WorldHalfWidth + 0.6f, WorldHalfWidth - 0.6f), Random.Range(-2.5f, 3.3f)));
-                pickupSpawnTimer = Random.Range(8f, 12f);
+                pickupSpawnTimer = Random.Range(PickupSpawnIntervalMinimum, PickupSpawnIntervalMaximum);
             }
         }
     }
@@ -265,9 +283,9 @@ public class SpaceShooterGame : MonoBehaviour
         boss = null;
         levelScore = 0;
         levelElapsed = 0f;
-        enemySpawnTimer = 0.65f;
-        asteroidSpawnTimer = 1.8f;
-        pickupSpawnTimer = 5.5f;
+        enemySpawnTimer = 1.4f;
+        asteroidSpawnTimer = 3.0f;
+        pickupSpawnTimer = 3.5f;
         levelStartTotalScore = totalScore;
         levelStartHealth = Player != null ? Player.Health : PlayerController.MaxHealth;
         levelStartWeapon = Player != null ? Player.WeaponLevel : 1;
@@ -433,7 +451,7 @@ public class SpaceShooterGame : MonoBehaviour
             return;
 
         AddScore(points);
-        if (Random.value < 0.28f)
+        if (Random.value < EnemyPickupDropChance)
         {
             PickupType drop = (PickupType)Random.Range(0, 5);
             SpawnPickup(drop, enemy.transform.position);
