@@ -106,7 +106,6 @@ public class SpaceShooterGame : MonoBehaviour
             GameObject cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
             gameCamera = cameraObject.AddComponent<Camera>();
-            cameraObject.AddComponent<AudioListener>();
         }
 
         gameCamera.orthographic = true;
