@@ -13,9 +13,11 @@ public class BossController : MonoBehaviour
     public void Initialize(int currentLevel)
     {
         level = currentLevel;
-        MaxHealth = 500f + (currentLevel - 1) * 750f;
+        // EASY MODE: Boss HP grows gently from level to level.
+        MaxHealth = 300f + (currentLevel - 1) * 350f;
         CurrentHealth = MaxHealth;
-        fireTimer = 1.2f;
+        // Bosses wait longer before the first attack.
+        fireTimer = 1.8f;
         movePhase = Random.Range(0f, 6.28f);
     }
 
@@ -34,7 +36,7 @@ public class BossController : MonoBehaviour
         if (fireTimer <= 0f)
         {
             FirePattern();
-            fireTimer = Mathf.Max(0.52f, 1.18f - level * 0.07f);
+            fireTimer = Mathf.Max(1.15f, 1.80f - level * 0.08f);
         }
     }
 
@@ -56,7 +58,7 @@ public class BossController : MonoBehaviour
             float angle = bulletCount == 1 ? 0f : Mathf.Lerp(-spread, spread, i / (float)(bulletCount - 1));
             Vector2 direction = Quaternion.Euler(0f, 0f, angle) * aim;
             BulletController.Create((Vector2)transform.position + direction * 0.72f,
-                direction, BulletController.BulletOwner.Enemy, 20f, 3.4f + level * 0.16f);
+                direction, BulletController.BulletOwner.Enemy, 20f, 2.8f + level * 0.12f);
         }
     }
 
