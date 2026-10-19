@@ -1,4 +1,5 @@
 using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -27,10 +28,22 @@ public static class SpaceShooterSetup
             EditorSceneManager.SaveScene(scene, ScenePath);
         }
 
-        EditorBuildSettings.scenes = new[]
+        List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+        bool sceneRegistered = false;
+        for (int i = 0; i < scenes.Count; i++)
         {
-            new EditorBuildSettingsScene(ScenePath, true)
-        };
+            if (scenes[i].path == ScenePath)
+            {
+                scenes[i] = new EditorBuildSettingsScene(ScenePath, true);
+                sceneRegistered = true;
+                break;
+            }
+        }
+
+        if (!sceneRegistered)
+            scenes.Add(new EditorBuildSettingsScene(ScenePath, true));
+
+        EditorBuildSettings.scenes = scenes.ToArray();
 
         AssetDatabase.Refresh();
         Debug.Log("Space Shooter scene is ready: " + ScenePath);
