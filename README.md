@@ -39,15 +39,15 @@ A small, playable Unity 2D space-shooter prototype built with C# and procedural 
 
 ## Level and score rules
 
-| Level | Score goal to summon Boss | Example Boss HP |
+| Level | Easy-mode score goal to summon Boss | Easy-mode Boss HP |
 |---|---:|---:|
-| 1 | 1,000 | 500 |
-| 2 | 2,000 | 1,250 |
-| 3 | 3,500 | 2,000 |
-| 4 | 5,000 | 2,750 |
-| 5 | 7,000 | 3,500 |
+| 1 | 600 | 300 |
+| 2 | 1,100 | 650 |
+| 3 | 1,700 | 1,000 |
+| 4 | 2,300 | 1,350 |
+| 5 | 3,000 | 1,700 |
 
-These are starting balance values and can be changed in `SpaceShooterGame.cs`. Defeating the Boss completes the current level. The final Boss (Level 5) ends the game with Victory.
+These are easy-mode starter values. Score goals are configured by `ScoreGoals` in `SpaceShooterGame.cs`; Boss HP is configured by `MaxHealth` in `BossController.cs`. Defeating the Boss completes the current level. The final Boss (Level 5) ends the game with Victory.
 
 ## Difficulty settings (Easy Mode)
 
@@ -60,6 +60,7 @@ The defaults are tuned to be more forgiving while you learn the controls. You ca
 | How often asteroids appear | `SpaceShooterGame.cs` → `AsteroidSpawnIntervalMinimum`, `AsteroidSpawnIntervalMaximum` | Every 4–5.5 seconds |
 | How often pickups appear | `SpaceShooterGame.cs` → `PickupSpawnIntervalMinimum`, `PickupSpawnIntervalMaximum`, `PickupSpawnChance` | Every 5.5–8 seconds, 90% spawn roll |
 | Chance an enemy drops a positive pickup | `SpaceShooterGame.cs` → `EnemyPickupDropChance` | 40% |
+| Player movement speed | `Assets/Scripts/PlayerController.cs` → `BaseMoveSpeed` | 5 units/second; higher = faster |
 | Player firing speed | `Assets/Scripts/PlayerController.cs` → `BaseFireInterval` | 0.30 seconds; lower = faster |
 | Player bullet damage | `PlayerController.cs` → `BaseBulletDamage` | 15; higher = stronger |
 | Player projectile speed | `PlayerController.cs` → `BulletController.Create(..., 9f)` in `PlayerController.cs` | 9; higher = faster bullets |
