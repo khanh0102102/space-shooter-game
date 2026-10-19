@@ -26,5 +26,4 @@
 .DS_Store
 Thumbs.db
 
-# Unity package manager cache
-/[Pp]ackages/packages-lock.json
+# Keep Packages/packages-lock.json tracked for reproducible package resolution.
