@@ -203,7 +203,11 @@ public class SpaceShooterGame : MonoBehaviour
             if (pickupSpawnTimer <= 0f)
             {
                 if (Random.value < PickupSpawnChance)
-                    SpawnPickup((PickupType)Random.Range(0, 8), new Vector2(Random.Range(-WorldHalfWidth + 0.6f, WorldHalfWidth - 0.6f), Random.Range(-2.5f, 3.3f)));
+                    SpawnPickup(
+                        Random.value < 0.75f
+                            ? (PickupType)Random.Range(0, 5)   // Most natural pickups are helpful.
+                            : (PickupType)Random.Range(5, 8),  // Negative pickups remain occasional.
+                        new Vector2(Random.Range(-WorldHalfWidth + 0.6f, WorldHalfWidth - 0.6f), Random.Range(-2.5f, 3.3f)));
                 pickupSpawnTimer = Random.Range(PickupSpawnIntervalMinimum, PickupSpawnIntervalMaximum);
             }
         }
