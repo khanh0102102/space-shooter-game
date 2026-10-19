@@ -26,6 +26,7 @@ public class BulletController : MonoBehaviour
 
         Rigidbody2D body = bulletObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
         body.simulated = true;
 
