@@ -8,8 +8,10 @@ public class PlayerController : MonoBehaviour
     public int WeaponLevel { get; private set; } = 1;
 
     private const float BaseMoveSpeed = 5f;
-    private const float BaseFireInterval = 0.40f;
-    private const float BaseBulletDamage = 10f;
+    // EASY MODE: lower interval = faster automatic firing.
+    private const float BaseFireInterval = 0.30f;
+    // EASY MODE: higher base damage helps clear normal enemies and Bosses faster.
+    private const float BaseBulletDamage = 15f;
 
     private SpriteRenderer spriteRenderer;
     private float fireTimer;
@@ -115,7 +117,7 @@ public class PlayerController : MonoBehaviour
             float angle = bulletCount == 1 ? 0f : Mathf.Lerp(-spread, spread, i / (float)(bulletCount - 1));
             Vector2 direction = Quaternion.Euler(0f, 0f, angle) * forward;
             Vector2 spawnPosition = (Vector2)transform.position + direction * 0.48f;
-            BulletController.Create(spawnPosition, direction, BulletController.BulletOwner.Player, BulletDamage, 8f);
+            BulletController.Create(spawnPosition, direction, BulletController.BulletOwner.Player, BulletDamage, 9f);
         }
     }
 
@@ -125,7 +127,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         Health = Mathf.Max(0, Health - damage);
-        invulnerableUntil = Time.time + 0.75f;
+        invulnerableUntil = Time.time + 1.0f;
 
         if (Health <= 0)
             SpaceShooterGame.Instance.GameOver();
@@ -202,7 +204,7 @@ public class PlayerController : MonoBehaviour
         slowFireRemaining = 0f;
         weakShotRemaining = 0f;
         fireTimer = 0.1f;
-        invulnerableUntil = Time.time + 0.75f;
+        invulnerableUntil = Time.time + 1.0f;
     }
 
     private void UpdateEffects(float deltaTime)
