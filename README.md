@@ -49,6 +49,32 @@ A small, playable Unity 2D space-shooter prototype built with C# and procedural 
 
 These are starting balance values and can be changed in `SpaceShooterGame.cs`. Defeating the Boss completes the current level. The final Boss (Level 5) ends the game with Victory.
 
+## Difficulty settings (Easy Mode)
+
+The defaults are tuned to be more forgiving while you learn the controls. You can change these values directly in the C# scripts, then return to Unity and let it recompile.
+
+| What to change | File and setting | Current easy default |
+|---|---|---|
+| Score needed to summon each Boss | `Assets/Scripts/SpaceShooterGame.cs` → `ScoreGoals` | `600, 1100, 1700, 2300, 3000` |
+| How often normal enemies appear | `SpaceShooterGame.cs` → `EnemySpawnIntervalBase`, `EnemySpawnIntervalPerLevel`, `EnemySpawnIntervalMinimum` | About 2 seconds early on |
+| How often asteroids appear | `SpaceShooterGame.cs` → `AsteroidSpawnIntervalMinimum`, `AsteroidSpawnIntervalMaximum` | Every 4–5.5 seconds |
+| How often pickups appear | `SpaceShooterGame.cs` → `PickupSpawnIntervalMinimum`, `PickupSpawnIntervalMaximum`, `PickupSpawnChance` | Every 5.5–8 seconds, 90% spawn roll |
+| Chance an enemy drops a positive pickup | `SpaceShooterGame.cs` → `EnemyPickupDropChance` | 40% |
+| Player firing speed | `Assets/Scripts/PlayerController.cs` → `BaseFireInterval` | 0.30 seconds; lower = faster |
+| Player bullet damage | `PlayerController.cs` → `BaseBulletDamage` | 15; higher = stronger |
+| Player projectile speed | `PlayerController.cs` → `BulletController.Create(..., 9f)` in `PlayerController.cs` | 9; higher = faster bullets |
+| Time protected after taking a hit | `PlayerController.cs` → `invulnerableUntil` | 1.0 seconds |
+| Enemy firing interval and bullet speed | `Assets/Scripts/EnemyController.cs` → `fireTimer` and `BulletController.Create` | Slower volleys and bullets |
+| Boss HP and attack pattern | `Assets/Scripts/BossController.cs` → `MaxHealth`, `fireTimer`, and Boss bullet speed | Boss HP: 300, 650, 1000, 1350, 1700 |
+
+**Rule of thumb:** To make the game easier, increase the enemy/asteroid spawn intervals, increase the player's damage, decrease the Boss HP values, or lower the score goals. To make it harder, do the opposite. Keep the score goals in ascending order so each new level still requires more progress.
+
+### How to apply your changes
+
+1. Open the relevant script under `Assets/Scripts` in Visual Studio or VS Code.
+2. Edit the number after the setting named in the table. Keep the `f` suffix on decimal values (for example, `0.30f`).
+3. Save the file and return to Unity. Wait for script compilation to finish, then press Play again.
+
 ## Pickups
 
 - Health: +10 HP (maximum 100).
