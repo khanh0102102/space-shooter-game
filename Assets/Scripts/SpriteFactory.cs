@@ -2,15 +2,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Generates simple placeholder sprites at runtime, so the prototype works without imported art assets.
+/// Loads Kenney Space Shooter Remastered sprites from Assets/Resources/Kenney.
+/// Keeps procedural fallbacks so the game still runs if an optional asset has not been copied yet.
 /// </summary>
 public static class SpriteFactory
 {
     private static readonly Dictionary<string, Sprite> Cache = new Dictionary<string, Sprite>();
     private const int TextureSize = 64;
+    private const string Root = "Kenney/";
+
+    public static Sprite LoadKenneySprite(string relativePath)
+    {
+        return Resources.Load<Sprite>(Root + relativePath);
+    }
 
     public static Sprite PlayerShip()
     {
+        Sprite imported = LoadKenneySprite("PNG/playerShip1_blue");
+        if (imported != null)
+            return imported;
+
         return Polygon("player-ship", new[]
         {
             new Vector2(0f, 0.50f),
@@ -22,8 +33,22 @@ public static class SpriteFactory
         }, new Color(0.18f, 0.84f, 1f));
     }
 
+    public static Sprite PlayerDamage(int tier)
+    {
+        tier = Mathf.Clamp(tier, 1, 3);
+        Sprite imported = LoadKenneySprite("PNG/Damage/playerShip1_damage" + tier);
+        return imported != null ? imported : PlayerShip();
+    }
+
     public static Sprite EnemyShip()
     {
+        string[] families = { "Black", "Blue", "Green", "Red" };
+        string family = families[Random.Range(0, families.Length)];
+        int variant = Random.Range(1, 6);
+        Sprite imported = LoadKenneySprite("PNG/Enemies/enemy" + family + variant);
+        if (imported != null)
+            return imported;
+
         return Polygon("enemy-ship", new[]
         {
             new Vector2(0f, -0.48f),
@@ -37,6 +62,19 @@ public static class SpriteFactory
 
     public static Sprite BossShip(int level)
     {
+        string[] bossPaths =
+        {
+            "PNG/Enemies/enemyBlack5",
+            "PNG/Enemies/enemyBlue5",
+            "PNG/Enemies/enemyGreen5",
+            "PNG/Enemies/enemyRed5",
+            "PNG/ufoYellow"
+        };
+
+        Sprite imported = LoadKenneySprite(bossPaths[Mathf.Clamp(level, 1, bossPaths.Length) - 1]);
+        if (imported != null)
+            return imported;
+
         Color color = level % 3 == 1
             ? new Color(1f, 0.22f, 0.34f)
             : level % 3 == 2
@@ -62,6 +100,28 @@ public static class SpriteFactory
 
     public static Sprite Asteroid()
     {
+        string[] paths =
+        {
+            "PNG/Meteors/meteorBrown_big1", "PNG/Meteors/meteorBrown_big2",
+            "PNG/Meteors/meteorBrown_big3", "PNG/Meteors/meteorBrown_big4",
+            "PNG/Meteors/meteorGrey_big1", "PNG/Meteors/meteorGrey_big2",
+            "PNG/Meteors/meteorGrey_big3", "PNG/Meteors/meteorGrey_big4",
+            "PNG/Meteors/meteorBrown_med1", "PNG/Meteors/meteorBrown_med3",
+            "PNG/Meteors/meteorGrey_med1", "PNG/Meteors/meteorGrey_med2",
+            "PNG/Meteors/meteorBrown_small1", "PNG/Meteors/meteorBrown_small2",
+            "PNG/Meteors/meteorGrey_small1", "PNG/Meteors/meteorGrey_small2",
+            "PNG/Meteors/meteorBrown_tiny1", "PNG/Meteors/meteorBrown_tiny2",
+            "PNG/Meteors/meteorGrey_tiny1", "PNG/Meteors/meteorGrey_tiny2"
+        };
+
+        // A random pick gives the asteroid field more visual variety.
+        for (int attempt = 0; attempt < paths.Length; attempt++)
+        {
+            Sprite imported = LoadKenneySprite(paths[Random.Range(0, paths.Length)]);
+            if (imported != null)
+                return imported;
+        }
+
         return Polygon("asteroid", new[]
         {
             new Vector2(-0.05f, 0.48f),
@@ -74,6 +134,121 @@ public static class SpriteFactory
             new Vector2(-0.39f, 0.20f),
             new Vector2(-0.22f, 0.35f)
         }, new Color(0.58f, 0.53f, 0.48f));
+    }
+
+    public static Sprite Background(int level)
+    {
+        string[] paths =
+        {
+            "Backgrounds/blue",
+            "Backgrounds/darkPurple",
+            "Backgrounds/purple",
+            "Backgrounds/blue",
+            "Backgrounds/black"
+        };
+
+        return Resources.Load<Sprite>(Root + paths[Mathf.Clamp(level, 1, paths.Length) - 1]);
+    }
+
+    public static Sprite Star()
+    {
+        Sprite imported = LoadKenneySprite("PNG/Effects/star" + Random.Range(1, 4));
+        return imported != null ? imported : Circle(new Color(0.72f, 0.83f, 1f));
+    }
+
+    public static Sprite Shield(int frame)
+    {
+        Sprite imported = LoadKenneySprite("PNG/Effects/shield" + Mathf.Clamp(frame, 1, 3));
+        return imported;
+    }
+
+    public static Sprite ExplosionFrame(int frame)
+    {
+        string frameName = Mathf.Clamp(frame, 0, 19).ToString("00");
+        Sprite imported = LoadKenneySprite("PNG/Effects/fire" + frameName);
+        if (imported != null)
+            return imported;
+
+        float amount = Mathf.Clamp01(frame / 19f);
+        return Circle(Color.Lerp(new Color(1f, 0.82f, 0.18f), new Color(1f, 0.18f, 0.03f), amount),
+            "fallback-explosion-" + frame);
+    }
+
+    public static Sprite Projectile(bool playerOwned)
+    {
+        Sprite imported = LoadKenneySprite(playerOwned ? "PNG/Lasers/laserBlue01" : "PNG/Lasers/laserRed01");
+        return imported != null
+            ? imported
+            : Circle(playerOwned ? new Color(0.35f, 0.94f, 1f) : new Color(1f, 0.30f, 0.34f));
+    }
+
+    public static Sprite Pickup(PickupType type)
+    {
+        string path;
+        Color fallbackColor;
+
+        switch (type)
+        {
+            case PickupType.Health:
+                path = "PNG/Power-ups/pill_green";
+                fallbackColor = new Color(0.20f, 1f, 0.42f);
+                break;
+            case PickupType.TripleShot:
+                path = "PNG/Power-ups/powerupBlue_star";
+                fallbackColor = new Color(0.76f, 0.32f, 1f);
+                break;
+            case PickupType.RapidFire:
+                path = "PNG/Power-ups/powerupYellow_bolt";
+                fallbackColor = new Color(1f, 0.82f, 0.18f);
+                break;
+            case PickupType.DamageBoost:
+                path = "PNG/Power-ups/powerupRed_bolt";
+                fallbackColor = new Color(1f, 0.34f, 0.15f);
+                break;
+            case PickupType.SpeedBoost:
+                path = "PNG/Effects/speed";
+                fallbackColor = new Color(0.18f, 0.88f, 1f);
+                break;
+            case PickupType.Slow:
+                path = "PNG/Power-ups/pill_red";
+                fallbackColor = new Color(0.58f, 0.30f, 0.88f);
+                break;
+            case PickupType.SlowFire:
+                path = "PNG/Power-ups/powerupRed";
+                fallbackColor = new Color(0.90f, 0.22f, 0.31f);
+                break;
+            default:
+                path = "PNG/Power-ups/powerupRed_shield";
+                fallbackColor = new Color(0.58f, 0.10f, 0.19f);
+                break;
+        }
+
+        Sprite imported = LoadKenneySprite(path);
+        return imported != null ? imported : Circle(fallbackColor, "pickup-" + type);
+    }
+
+    public static Sprite UiSprite(string name)
+    {
+        return LoadKenneySprite("PNG/UI/" + name);
+    }
+
+    public static Texture2D UiTexture(string name)
+    {
+        Sprite sprite = UiSprite(name);
+        if (sprite != null)
+            return sprite.texture;
+
+        return Resources.Load<Texture2D>(Root + "PNG/UI/" + name);
+    }
+
+    public static Font GameFont(bool thin = false)
+    {
+        return Resources.Load<Font>(Root + (thin ? "Bonus/kenvector_future_thin" : "Bonus/kenvector_future"));
+    }
+
+    public static Sprite Engine()
+    {
+        return LoadKenneySprite("PNG/Parts/engine3");
     }
 
     public static Sprite Circle(Color color, string cacheKey = null)
@@ -112,24 +287,6 @@ public static class SpriteFactory
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, TextureSize, TextureSize), new Vector2(0.5f, 0.5f), TextureSize);
         Cache[key] = sprite;
         return sprite;
-    }
-
-    public static Sprite Pickup(PickupType type)
-    {
-        Color color;
-        switch (type)
-        {
-            case PickupType.Health: color = new Color(0.20f, 1f, 0.42f); break;
-            case PickupType.TripleShot: color = new Color(0.76f, 0.32f, 1f); break;
-            case PickupType.RapidFire: color = new Color(1f, 0.82f, 0.18f); break;
-            case PickupType.DamageBoost: color = new Color(1f, 0.34f, 0.15f); break;
-            case PickupType.SpeedBoost: color = new Color(0.18f, 0.88f, 1f); break;
-            case PickupType.Slow: color = new Color(0.58f, 0.30f, 0.88f); break;
-            case PickupType.SlowFire: color = new Color(0.90f, 0.22f, 0.31f); break;
-            default: color = new Color(0.58f, 0.10f, 0.19f); break;
-        }
-
-        return Circle(color, "pickup-" + type);
     }
 
     private static Sprite Polygon(string key, Vector2[] points, Color color)
