@@ -18,7 +18,13 @@ public static class SpriteFactory
 
     public static Sprite PlayerShip()
     {
-        Sprite imported = LoadKenneySprite("PNG/playerShip1_blue");
+        return PlayerShip(1);
+    }
+
+    public static Sprite PlayerShip(int weaponLevel)
+    {
+        int shipVariant = Mathf.Clamp(weaponLevel, 1, 3);
+        Sprite imported = LoadKenneySprite("PNG/playerShip" + shipVariant + "_blue");
         if (imported != null)
             return imported;
 
@@ -66,7 +72,7 @@ public static class SpriteFactory
         {
             "PNG/Enemies/enemyBlack5",
             "PNG/Enemies/enemyBlue5",
-            "PNG/Enemies/enemyGreen5",
+            "PNG/ufoBlue",
             "PNG/Enemies/enemyRed5",
             "PNG/ufoYellow"
         };
