@@ -14,6 +14,31 @@ A small, playable Unity 2D space-shooter prototype built with C# and procedural 
 - Pause/resume, restart-level, main menu, level selection, Game Over, and final Victory screens.
 - Unlocked levels and best score are saved locally with PlayerPrefs.
 
+## Integrate Kenney Space Shooter Remastered assets
+
+The runtime asset loader is already set up to use the Kenney files with their original filenames and subfolder layout. The downloaded image/audio files are not committed to this repository; copy them from your downloaded pack on your computer.
+
+From the extracted kenney_space-shooter-remastered folder, copy:
+
+- Backgrounds to Assets/Resources/Kenney/Backgrounds
+- the entire PNG folder (including every subfolder: Damage, Effects, Enemies, Lasers, Meteors, Parts, Power-ups, and UI) to Assets/Resources/Kenney/PNG
+- Bonus to Assets/Resources/Kenney/Bonus
+- license.txt to Assets/Resources/Kenney/license.txt
+
+**Important:** preserve the names and subfolder structure from the pack. Do not rename files. In Unity, select the PNG assets and set **Texture Type = Sprite (2D and UI)**. The game uses:
+
+- Blue player ship and the playerShip2_blue / playerShip3_blue variants as the weapon is upgraded.
+- All four enemy color families and five variants per family, picked randomly.
+- Separate Boss artwork for each of the five levels.
+- Brown and grey meteor variants.
+- Blue and red laser sprites.
+- Health, weapon, rapid-fire, damage, speed and negative-effect power-ups.
+- Four space backgrounds, star sprites, explosion frames and shield frames.
+- Kenney button textures, mouse cursor, player-life icon, and the KenVector fonts.
+- Optional sound effects from Bonus (laser, shield, zap, victory and lose cues).
+
+Packages/manifest.json enables Unity's built-in Audio module for the supplied sound effects. If the asset folders are not copied yet, procedural fallback shapes remain available so the scene can still run.
+
 ## Requirements
 
 - Unity 2022.3 LTS or newer.
