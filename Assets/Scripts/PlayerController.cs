@@ -171,7 +171,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         if (Health > 75)
-            spriteRenderer.sprite = SpriteFactory.PlayerShip();
+            spriteRenderer.sprite = SpriteFactory.PlayerShip(WeaponLevel);
         else if (Health > 50)
             spriteRenderer.sprite = SpriteFactory.PlayerDamage(1);
         else if (Health > 25)
@@ -192,6 +192,7 @@ public class PlayerController : MonoBehaviour
 
             case PickupType.TripleShot:
                 WeaponLevel = Mathf.Min(3, WeaponLevel + 1);
+                UpdateDamageSprite();
                 SpaceShooterGame.Instance.Notify(WeaponLevel == 3 ? "WEAPON MAX: 5 SHOTS" : "WEAPON UPGRADE: 3 SHOTS");
                 break;
 
