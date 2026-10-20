@@ -570,6 +570,7 @@ public class SpaceShooterGame : MonoBehaviour
             return;
 
         CurrentState = ScreenState.GameOver;
+        AudioManager.Play("sfx_lose", 0.65f);
         Time.timeScale = 0f;
         SaveBestScore();
     }
