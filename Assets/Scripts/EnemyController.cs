@@ -55,6 +55,7 @@ public class EnemyController : MonoBehaviour
 
         BulletController.Create((Vector2)transform.position + direction.normalized * 0.34f,
             direction, BulletController.BulletOwner.Enemy, 20f, 2.7f + level * 0.08f);
+        AudioManager.Play("sfx_laser2", 0.10f);
     }
 
     public void TakeDamage(float damage)
