@@ -16,12 +16,15 @@ public class BulletController : MonoBehaviour
     {
         GameObject bulletObject = new GameObject(owner == BulletOwner.Player ? "Player Bullet" : "Enemy Bullet");
         bulletObject.transform.position = position;
-        bulletObject.transform.localScale = owner == BulletOwner.Player ? Vector3.one * 0.20f : Vector3.one * 0.24f;
+        bool playerOwned = owner == BulletOwner.Player;
+        string laserPath = playerOwned ? "Kenney/PNG/Lasers/laserBlue01" : "Kenney/PNG/Lasers/laserRed01";
+        bool hasLaserAsset = Resources.Load<Sprite>(laserPath) != null;
+        bulletObject.transform.localScale = hasLaserAsset
+            ? Vector3.one
+            : (playerOwned ? Vector3.one * 0.20f : Vector3.one * 0.24f);
 
         SpriteRenderer renderer = bulletObject.AddComponent<SpriteRenderer>();
-        renderer.sprite = SpriteFactory.Circle(owner == BulletOwner.Player
-            ? new Color(0.35f, 0.94f, 1f)
-            : new Color(1f, 0.30f, 0.34f));
+        renderer.sprite = SpriteFactory.Projectile(playerOwned);
         renderer.sortingOrder = 10;
 
         Rigidbody2D body = bulletObject.AddComponent<Rigidbody2D>();
@@ -30,9 +33,18 @@ public class BulletController : MonoBehaviour
         body.gravityScale = 0f;
         body.simulated = true;
 
-        CircleCollider2D collider = bulletObject.AddComponent<CircleCollider2D>();
-        collider.isTrigger = true;
-        collider.radius = 0.45f;
+        if (hasLaserAsset)
+        {
+            BoxCollider2D collider = bulletObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = new Vector2(0.22f, 0.60f);
+        }
+        else
+        {
+            CircleCollider2D collider = bulletObject.AddComponent<CircleCollider2D>();
+            collider.isTrigger = true;
+            collider.radius = 0.45f;
+        }
 
         BulletController controller = bulletObject.AddComponent<BulletController>();
         controller.Initialize(shotDirection, owner, damage, bulletSpeed);
@@ -42,6 +54,7 @@ public class BulletController : MonoBehaviour
     public void Initialize(Vector2 shotDirection, BulletOwner owner, float damage, float bulletSpeed)
     {
         direction = shotDirection.sqrMagnitude > 0.001f ? shotDirection.normalized : Vector2.up;
+        transform.rotation = Quaternion.FromToRotation(Vector3.up, direction);
         Owner = owner;
         Damage = damage;
         speed = bulletSpeed;
