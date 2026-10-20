@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private const float BaseBulletDamage = 15f;
 
     private SpriteRenderer spriteRenderer;
+    private SpriteRenderer shieldRenderer;
     private float fireTimer;
     private float invulnerableUntil;
     private float rapidFireRemaining;
@@ -50,6 +51,17 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         Health = MaxHealth;
         WeaponLevel = 1;
+
+        GameObject shieldObject = new GameObject("Shield Effect");
+        shieldObject.transform.SetParent(transform, false);
+        shieldObject.transform.localPosition = Vector3.zero;
+        shieldObject.transform.localScale = Vector3.one * 1.35f;
+        shieldRenderer = shieldObject.AddComponent<SpriteRenderer>();
+        shieldRenderer.sprite = SpriteFactory.Shield(1);
+        shieldRenderer.sortingOrder = 8;
+        shieldRenderer.enabled = false;
+
+        UpdateDamageSprite();
     }
 
     private void Update()
@@ -92,6 +104,14 @@ public class PlayerController : MonoBehaviour
             else
                 spriteRenderer.color = Color.white;
         }
+
+        if (shieldRenderer != null)
+        {
+            bool shieldAvailable = SpriteFactory.Shield(1) != null;
+            shieldRenderer.enabled = shieldAvailable && Time.time < invulnerableUntil;
+            if (shieldRenderer.enabled)
+                shieldRenderer.sprite = SpriteFactory.Shield(1 + Mathf.FloorToInt(Time.unscaledTime * 8f) % 3);
+        }
     }
 
     private void AimAtMouse()
@@ -119,6 +139,8 @@ public class PlayerController : MonoBehaviour
             Vector2 spawnPosition = (Vector2)transform.position + direction * 0.48f;
             BulletController.Create(spawnPosition, direction, BulletController.BulletOwner.Player, BulletDamage, 9f);
         }
+
+        AudioManager.Play("sfx_laser1", 0.14f);
     }
 
     public void TakeDamage(int damage)
@@ -128,6 +150,8 @@ public class PlayerController : MonoBehaviour
 
         Health = Mathf.Max(0, Health - damage);
         invulnerableUntil = Time.time + 1.0f;
+        UpdateDamageSprite();
+        AudioManager.Play("sfx_shieldDown", 0.45f);
 
         if (Health <= 0)
             SpaceShooterGame.Instance.GameOver();
@@ -138,6 +162,22 @@ public class PlayerController : MonoBehaviour
     public void Heal(int amount)
     {
         Health = Mathf.Clamp(Health + Mathf.Max(0, amount), 0, MaxHealth);
+        UpdateDamageSprite();
+    }
+
+    private void UpdateDamageSprite()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (Health > 75)
+            spriteRenderer.sprite = SpriteFactory.PlayerShip();
+        else if (Health > 50)
+            spriteRenderer.sprite = SpriteFactory.PlayerDamage(1);
+        else if (Health > 25)
+            spriteRenderer.sprite = SpriteFactory.PlayerDamage(2);
+        else
+            spriteRenderer.sprite = SpriteFactory.PlayerDamage(3);
     }
 
     public void ApplyPickup(PickupType type)
@@ -191,6 +231,8 @@ public class PlayerController : MonoBehaviour
                 SpaceShooterGame.Instance.Notify("WEAK SHOT: 5s");
                 break;
         }
+
+        AudioManager.Play(type == PickupType.Health ? "sfx_shieldUp" : "sfx_zap", 0.42f);
     }
 
     public void ResetForLevel(int health, int weaponLevel)
@@ -205,6 +247,7 @@ public class PlayerController : MonoBehaviour
         weakShotRemaining = 0f;
         fireTimer = 0.1f;
         invulnerableUntil = Time.time + 1.0f;
+        UpdateDamageSprite();
     }
 
     private void UpdateEffects(float deltaTime)
