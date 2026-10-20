@@ -49,6 +49,7 @@ public class SpaceShooterGame : MonoBehaviour
     };
 
     private Camera gameCamera;
+    private SpriteRenderer backgroundRenderer;
     private ScreenState stateBeforePause = ScreenState.Playing;
     private int currentLevel = 1;
     private int unlockedLevel = 1;
@@ -104,7 +105,10 @@ public class SpaceShooterGame : MonoBehaviour
         bestScore = PlayerPrefs.GetInt("SpaceShooterBestScore", 0);
 
         SetupCamera();
+        AudioManager.Initialize(gameCamera);
+        CreateBackground();
         CreateStarfield();
+        SetupCursor();
     }
 
     private void OnDestroy()
@@ -133,6 +137,48 @@ public class SpaceShooterGame : MonoBehaviour
         gameCamera.backgroundColor = new Color(0.012f, 0.022f, 0.075f);
     }
 
+    private void CreateBackground()
+    {
+        GameObject backgroundObject = new GameObject("Space Background");
+        backgroundObject.transform.SetParent(transform, false);
+        backgroundObject.transform.position = new Vector3(0f, 0f, 5f);
+
+        backgroundRenderer = backgroundObject.AddComponent<SpriteRenderer>();
+        backgroundRenderer.sortingOrder = -1000;
+        RefreshBackground();
+    }
+
+    private void RefreshBackground()
+    {
+        if (backgroundRenderer == null)
+            return;
+
+        Sprite background = SpriteFactory.Background(currentLevel);
+        if (background == null)
+        {
+            backgroundRenderer.enabled = false;
+            return;
+        }
+
+        backgroundRenderer.enabled = true;
+        backgroundRenderer.sprite = background;
+        backgroundRenderer.sortingOrder = -1000;
+        backgroundRenderer.transform.position = new Vector3(0f, 0f, 5f);
+
+        Vector2 spriteSize = background.bounds.size;
+        float widthScale = (WorldHalfWidth * 2f) / Mathf.Max(0.01f, spriteSize.x);
+        float heightScale = (WorldTop * 2f) / Mathf.Max(0.01f, spriteSize.y);
+        float fitScale = Mathf.Max(widthScale, heightScale);
+        backgroundRenderer.transform.localScale = Vector3.one * fitScale;
+    }
+
+    private void SetupCursor()
+    {
+        Sprite cursor = SpriteFactory.UiSprite("cursor");
+        if (cursor != null)
+            Cursor.SetCursor(cursor.texture, Vector2.zero, CursorMode.Auto);
+    }
+
     private void CreateStarfield()
     {
         for (int i = 0; i < 105; i++)
@@ -147,10 +193,7 @@ public class SpaceShooterGame : MonoBehaviour
             star.transform.localScale = Vector3.one * size;
 
             SpriteRenderer renderer = star.AddComponent<SpriteRenderer>();
-            Color starColor = Random.value > 0.82f
-                ? new Color(0.35f, 0.75f, 1f)
-                : new Color(0.72f, 0.83f, 1f);
-            renderer.sprite = SpriteFactory.Circle(starColor);
+            renderer.sprite = SpriteFactory.Star();
             renderer.sortingOrder = -100;
 
             StarfieldController controller = star.AddComponent<StarfieldController>();
@@ -285,6 +328,7 @@ public class SpaceShooterGame : MonoBehaviour
         }
 
         boss = null;
+        RefreshBackground();
         levelScore = 0;
         levelElapsed = 0f;
         enemySpawnTimer = 1.4f;
@@ -424,6 +468,20 @@ public class SpaceShooterGame : MonoBehaviour
             Destroy(item.gameObject);
     }
 
+    public void SpawnExplosion(Vector3 position, float scale)
+    {
+        GameObject effectObject = new GameObject("Explosion Effect");
+        effectObject.transform.position = new Vector3(position.x, position.y, 0f);
+        effectObject.transform.localScale = Vector3.one * scale;
+
+        SpriteRenderer renderer = effectObject.AddComponent<SpriteRenderer>();
+        renderer.sprite = SpriteFactory.ExplosionFrame(0);
+        renderer.sortingOrder = 30;
+
+        SpriteAnimationController animation = effectObject.AddComponent<SpriteAnimationController>();
+        animation.Initialize(20, 24f);
+    }
+
     private void SpawnBoss()
     {
         ClearArenaForBoss();
@@ -454,6 +512,7 @@ public class SpaceShooterGame : MonoBehaviour
         if (!IsGameplayActive)
             return;
 
+        SpawnExplosion(enemy.transform.position, 0.8f);
         AddScore(points);
         if (Random.value < EnemyPickupDropChance)
         {
@@ -481,6 +540,8 @@ public class SpaceShooterGame : MonoBehaviour
         if (CurrentState != ScreenState.BossFight || boss != defeatedBoss)
             return;
 
+        SpawnExplosion(defeatedBoss.transform.position, 2.4f);
+        AudioManager.Play("sfx_twoTone", 0.75f);
         boss = null;
         levelScore += 1000;
         totalScore += 1000;
@@ -614,6 +675,33 @@ public class SpaceShooterGame : MonoBehaviour
             fontSize = 17,
             fontStyle = FontStyle.Bold
         };
+
+        Font gameFont = SpriteFactory.GameFont();
+        Font thinFont = SpriteFactory.GameFont(true);
+        if (gameFont != null)
+        {
+            titleStyle.font = gameFont;
+            subtitleStyle.font = gameFont;
+            bodyStyle.font = gameFont;
+            buttonStyle.font = gameFont;
+        }
+        if (thinFont != null)
+            smallStyle.font = thinFont;
+
+        Texture2D buttonBlue = SpriteFactory.UiTexture("buttonBlue");
+        Texture2D buttonGreen = SpriteFactory.UiTexture("buttonGreen");
+        Texture2D buttonYellow = SpriteFactory.UiTexture("buttonYellow");
+        if (buttonBlue != null)
+        {
+            buttonStyle.normal.background = buttonBlue;
+            buttonStyle.focused.background = buttonBlue;
+        }
+        if (buttonGreen != null)
+            buttonStyle.hover.background = buttonGreen;
+        if (buttonYellow != null)
+            buttonStyle.active.background = buttonYellow;
+
+        buttonStyle.border = new RectOffset(12, 12, 8, 8);
     }
 
     private void DrawMainMenu()
@@ -665,7 +753,10 @@ public class SpaceShooterGame : MonoBehaviour
         GUI.DrawTexture(new Rect(healthBar.x + 2f, healthBar.y + 2f, (healthBar.width - 4f) * health / PlayerController.MaxHealth, healthBar.height - 4f), Texture2D.whiteTexture);
         GUI.color = oldColor;
 
-        GUI.Label(new Rect(panel.x + 12f, panel.y + 59f, 300f, 22f),
+        Texture2D lifeIcon = SpriteFactory.UiTexture("playerLife1_blue");
+        if (lifeIcon != null)
+            GUI.DrawTexture(new Rect(panel.x + 12f, panel.y + 57f, 25f, 25f), lifeIcon, ScaleMode.ScaleToFit, true);
+        GUI.Label(new Rect(panel.x + 42f, panel.y + 59f, 270f, 22f),
             "HP: " + health + "/100     Weapon: " + (Player != null ? Player.WeaponLevel : 1) + "/3", bodyStyle);
         GUI.Label(new Rect(panel.x + 12f, panel.y + 83f, 300f, 22f),
             "Stage score: " + levelScore + " / " + ScoreGoalForLevel(currentLevel), bodyStyle);
