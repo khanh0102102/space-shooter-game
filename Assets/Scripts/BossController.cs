@@ -60,6 +60,8 @@ public class BossController : MonoBehaviour
             BulletController.Create((Vector2)transform.position + direction * 0.72f,
                 direction, BulletController.BulletOwner.Enemy, 20f, 2.8f + level * 0.12f);
         }
+
+        AudioManager.Play("sfx_laser2", 0.22f);
     }
 
     public void TakeDamage(float damage)
