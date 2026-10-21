@@ -96,7 +96,6 @@ public static class SpaceExplorerSceneSetup
         if (!hasController)
         {
             GameObject root = new GameObject("SpaceExplorerSceneRoot");
-            SceneManager.MoveGameObjectToScene(root, scene);
             root.AddComponent<SpaceExplorerSceneController>();
         }
 
