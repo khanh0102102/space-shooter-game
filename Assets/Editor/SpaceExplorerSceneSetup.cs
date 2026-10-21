@@ -34,9 +34,8 @@ public static class SpaceExplorerSceneSetup
         Directory.CreateDirectory(SceneFolder);
         AssetDatabase.Refresh();
 
-        string[] sceneNames = { "MainMenu", "Gameplay", "EndGame" };
-        for (int i = 0; i < RequiredScenePaths.Length; i++)
-            EnsureScene(RequiredScenePaths[i], sceneNames[i]);
+        foreach (string scenePath in RequiredScenePaths)
+            EnsureScene(scenePath);
 
         List<EditorBuildSettingsScene> buildScenes = new List<EditorBuildSettingsScene>();
         HashSet<string> added = new HashSet<string>();
@@ -62,7 +61,7 @@ public static class SpaceExplorerSceneSetup
         Debug.Log("Space Explorer assignment scenes are ready. MainMenu is the first Build Settings scene.");
     }
 
-    private static void EnsureScene(string path, string sceneName)
+    private static void EnsureScene(string path)
     {
         Scene originalActiveScene = SceneManager.GetActiveScene();
         bool sceneAlreadyLoaded = false;
@@ -79,7 +78,6 @@ public static class SpaceExplorerSceneSetup
         else
         {
             scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-            scene.name = sceneName;
         }
 
         bool sceneWasCreated = !File.Exists(path);
