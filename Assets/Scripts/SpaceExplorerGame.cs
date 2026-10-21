@@ -257,7 +257,7 @@ public class SpaceExplorerGame : MonoBehaviour
     public void HitAsteroid(SpaceExplorerAsteroid asteroid)
     {
         if (!IsPlaying) return;
-        Score = Mathf.Max(0, Score - 10);
+        Score -= 10;
         EndGame();
     }
 
