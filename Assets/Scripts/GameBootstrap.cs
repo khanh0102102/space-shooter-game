@@ -2,25 +2,27 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Starts the original Space Shooter prototype only when its legacy Main scene is opened.
-/// The Space Explorer assignment uses separate MainMenu, Gameplay and EndGame scenes.
+/// Boots Space Explorer in its three assignment scenes and keeps the legacy prototype isolated.
 /// </summary>
 public class GameBootstrap : MonoBehaviour
 {
     private void Awake()
     {
-        StartLegacyGameIfNeeded();
+        StartCorrectGame();
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void StartGameIfNeeded()
     {
-        StartLegacyGameIfNeeded();
+        StartCorrectGame();
     }
 
-    private static void StartLegacyGameIfNeeded()
+    private static void StartCorrectGame()
     {
-        if (SceneManager.GetActiveScene().name == "Main")
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "Main")
             SpaceShooterGame.CreateIfMissing();
+        else
+            SpaceExplorerGame.CreateIfMissing();
     }
 }
