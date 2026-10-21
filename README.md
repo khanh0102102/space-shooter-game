@@ -1,130 +1,70 @@
-# Space Shooter Game (Unity 2D)
+# Space Explorer — Unity 2D Lab Assignment
 
-A small, playable Unity 2D space-shooter prototype built with C# and procedural sprites. It has no external art or asset dependencies: the ships, bullets, asteroids, pickups, and starfield are generated at runtime.
+A 2D Unity game built around three real scenes: **MainMenu**, **Gameplay**, and **EndGame**. The project keeps the original Space Shooter prototype in the legacy \`Main.unity\` scene, while the assignment flow starts from \`MainMenu.unity\`.
 
-## Features
+## Assignment requirements implemented
 
-- WASD or arrow-key movement.
-- Automatic shooting aimed toward the mouse cursor.
-- 1, 3, and 5-shot weapon levels.
-- Enemies that move and fire, drifting asteroids, and collision damage.
-- Health, triple-shot, rapid-fire, damage, and movement pickups; slow/weak-shot debuffs.
-- Five levels. **Every level has its own Boss**; reaching that level's score goal summons the Boss. Defeating it unlocks the next level.
-- Level score resets when a new level starts; total score continues through the run.
-- Pause/resume, restart-level, main menu, level selection, Game Over, and final Victory screens.
-- Unlocked levels and best score are saved locally with PlayerPrefs.
+| Requirement | Implementation |
+|---|---|
+| Main Menu with Play button | Play loads the Gameplay scene and starts a fresh run |
+| Instructions button | Opens an instructions panel in the Main Menu |
+| Spaceship moves with arrow keys | Up, Down, Left and Right move the player ship |
+| Shooting lasers | Hold Space to fire laser projectiles |
+| Asteroids move randomly | Asteroids drift and periodically change direction; they bounce at the camera bounds |
+| Stars scattered in space | Collectible stars are spawned across the play area and replenished during play |
+| Collecting stars adds points | Each star adds 10 points |
+| Asteroid collision deducts points | An asteroid hit deducts 10 points (score never drops below zero) and immediately ends the run, matching the assignment's game-over rule |
+| Score HUD | The current score appears during gameplay |
+| End Game scene | Displays the final score, with Main Menu and Quit buttons |
+| Scene transitions | MainMenu → Gameplay → EndGame, with a fade transition |
+| Physics and colliders | Player, asteroids, stars and lasers use 2D colliders and Rigidbody2D components |
+| Documentation | Comments explain scene setup, movement, collision handling, collectibles and scoring |
 
-## Integrate Kenney Space Shooter Remastered assets
-
-The runtime asset loader is already set up to use the Kenney files with their original filenames and subfolder layout. The downloaded image/audio files are not committed to this repository; copy them from your downloaded pack on your computer.
-
-From the extracted kenney_space-shooter-remastered folder, copy:
-
-- Backgrounds to Assets/Resources/Kenney/Backgrounds
-- the entire PNG folder (including every subfolder: Damage, Effects, Enemies, Lasers, Meteors, Parts, Power-ups, and UI) to Assets/Resources/Kenney/PNG
-- Bonus to Assets/Resources/Kenney/Bonus
-- license.txt to Assets/Resources/Kenney/license.txt
-
-**Important:** preserve the names and subfolder structure from the pack. Do not rename files. In Unity, select the PNG assets and set **Texture Type = Sprite (2D and UI)**. The game uses:
-
-- Blue player ship and the playerShip2_blue / playerShip3_blue variants as the weapon is upgraded.
-- All four enemy color families and five variants per family, picked randomly.
-- Separate Boss artwork for each of the five levels.
-- Brown and grey meteor variants.
-- Blue and red laser sprites.
-- Health, weapon, rapid-fire, damage, speed and negative-effect power-ups.
-- Four space backgrounds, star sprites, explosion frames and shield frames.
-- Kenney button textures, mouse cursor, player-life icon, and the KenVector fonts.
-- Optional sound effects from Bonus (laser, shield, zap, victory and lose cues).
-
-Packages/manifest.json enables Unity's built-in Audio module for the supplied sound effects. If the asset folders are not copied yet, procedural fallback shapes remain available so the scene can still run.
-
-## Requirements
-
-- Unity 2022.3 LTS or newer.
-- The built-in 2D physics module. No third-party packages are required.
-
-## Open and run
-
-1. Download the repository as a ZIP or clone it:
-   - Git: `git clone https://github.com/khanh0102102/space-shooter-game.git`
-   - Or open the repository page and choose **Code → Download ZIP**, then extract it.
-2. Open **Unity Hub**.
-3. Choose **Add → Add project from disk** and select the extracted `space-shooter-game` folder (the folder containing `Assets`, `Packages`, and `ProjectSettings`).
-4. Open the project with Unity 2022.3 LTS or newer. Wait for the first import and script compilation to finish.
-5. The editor setup script creates `Assets/Scenes/Main.unity` and adds it to Build Settings when the project is imported. If it has not appeared yet, use **Space Shooter → Create/Repair Main Scene** from the Unity menu.
-6. Open `Assets/Scenes/Main.unity` and press **Play**. Click **NEW GAME** in the game window.
+The generated assignment scenes are saved under \`Assets/Scenes\`. The editor setup script adds them to Build Settings in the correct order, with MainMenu first.
 
 ## Controls
 
-- **WASD / Arrow keys**: move the ship.
-- **Mouse position**: aim. The ship auto-fires; no mouse button is required to shoot.
-- **Esc**: pause/resume.
-- The in-game **Pause** button opens Resume, Restart Level, and Main Menu options.
+- **Arrow keys**: move the spaceship.
+- **Hold Space**: shoot lasers at asteroids.
+- **Esc**: pause or resume gameplay.
 
-## Level and score rules
+## Kenney Space Shooter Remastered assets (optional)
 
-| Level | Easy-mode score goal to summon Boss | Easy-mode Boss HP |
-|---|---:|---:|
-| 1 | 600 | 300 |
-| 2 | 1,100 | 650 |
-| 3 | 1,700 | 1,000 |
-| 4 | 2,300 | 1,350 |
-| 5 | 3,000 | 1,700 |
+The project can run with generated fallback sprites. To use the Kenney artwork and sound effects, copy the folders from the extracted \`kenney_space-shooter-remastered\` pack into:
 
-These are easy-mode starter values. Score goals are configured by `ScoreGoals` in `SpaceShooterGame.cs`; Boss HP is configured by `MaxHealth` in `BossController.cs`. Defeating the Boss completes the current level. The final Boss (Level 5) ends the game with Victory.
+- \`Backgrounds\` → \`Assets/Resources/Kenney/Backgrounds\`
+- the entire \`PNG\` folder → \`Assets/Resources/Kenney/PNG\`
+- \`Bonus\` → \`Assets/Resources/Kenney/Bonus\`
+- \`license.txt\` → \`Assets/Resources/Kenney/license.txt\`
 
-## Difficulty settings (Easy Mode)
+Preserve the original file names and directory structure. For PNGs, select the files in Unity and set **Texture Type** to **Sprite (2D and UI)**.
 
-The defaults are tuned to be more forgiving while you learn the controls. You can change these values directly in the C# scripts, then return to Unity and let it recompile.
+## Open and run
 
-| What to change | File and setting | Current easy default |
-|---|---|---|
-| Score needed to summon each Boss | `Assets/Scripts/SpaceShooterGame.cs` → `ScoreGoals` | `600, 1100, 1700, 2300, 3000` |
-| How often normal enemies appear | `SpaceShooterGame.cs` → `EnemySpawnIntervalBase`, `EnemySpawnIntervalPerLevel`, `EnemySpawnIntervalMinimum` | About 2 seconds early on |
-| How often asteroids appear | `SpaceShooterGame.cs` → `AsteroidSpawnIntervalMinimum`, `AsteroidSpawnIntervalMaximum` | Every 4–5.5 seconds |
-| How often pickups appear | `SpaceShooterGame.cs` → `PickupSpawnIntervalMinimum`, `PickupSpawnIntervalMaximum`, `PickupSpawnChance` | Every 5.5–8 seconds, 90% spawn roll |
-| Chance an enemy drops a positive pickup | `SpaceShooterGame.cs` → `EnemyPickupDropChance` | 40% |
-| Player movement speed | `Assets/Scripts/PlayerController.cs` → `BaseMoveSpeed` | 5 units/second; higher = faster |
-| Player firing speed | `Assets/Scripts/PlayerController.cs` → `BaseFireInterval` | 0.30 seconds; lower = faster |
-| Player bullet damage | `PlayerController.cs` → `BaseBulletDamage` | 15; higher = stronger |
-| Player projectile speed | `PlayerController.cs` → `BulletController.Create(..., 9f)` in `PlayerController.cs` | 9; higher = faster bullets |
-| Time protected after taking a hit | `PlayerController.cs` → `invulnerableUntil` | 1.0 seconds |
-| Enemy firing interval and bullet speed | `Assets/Scripts/EnemyController.cs` → `fireTimer` and `BulletController.Create` | Slower volleys and bullets |
-| Boss HP and attack pattern | `Assets/Scripts/BossController.cs` → `MaxHealth`, `fireTimer`, and Boss bullet speed | Boss HP: 300, 650, 1000, 1350, 1700 |
+1. Clone the repository or download and extract its ZIP.
+2. In Unity Hub, add the project folder (the folder containing \`Assets\`, \`Packages\`, and \`ProjectSettings\`).
+3. Open the project with a supported Unity LTS Editor and wait for script compilation and asset import.
+4. The editor setup creates \`Assets/Scenes/MainMenu.unity\`, \`Assets/Scenes/Gameplay.unity\` and \`Assets/Scenes/EndGame.unity\`, then registers them in Build Settings. You can also run **Space Explorer → Create or Repair Assignment Scenes** from the Unity menu.
+5. Double-click \`Assets/Scenes/MainMenu.unity\` and press Play.
 
-**Rule of thumb:** To make the game easier, increase the enemy/asteroid spawn intervals, increase the player's damage, decrease the Boss HP values, or lower the score goals. To make it harder, do the opposite. Keep the score goals in ascending order so each new level still requires more progress.
-
-### How to apply your changes
-
-1. Open the relevant script under `Assets/Scripts` in Visual Studio or VS Code.
-2. Edit the number after the setting named in the table. Keep the `f` suffix on decimal values (for example, `0.30f`).
-3. Save the file and return to Unity. Wait for script compilation to finish, then press Play again.
-
-## Pickups
-
-- Health: +10 HP (maximum 100).
-- Triple Shot: upgrades the weapon from 1 to 3 to 5 projectiles.
-- Rapid Fire: temporarily reduces the firing interval.
-- Damage Boost: temporarily increases bullet damage.
-- Speed Boost: temporarily increases movement speed.
-- Slow, Slow Fire, and Weak Shot: temporary negative effects. Picking up the opposing effect cancels the active one.
-
-Temporary effects pause while the game is paused. At the beginning of a new level, weapon level and remaining HP carry over; the player receives +30 HP (maximum 100) and temporary effects are cleared.
+If the scenes do not appear after compilation, use the menu command in step 4 and wait for Unity to finish saving the scene files.
 
 ## Project structure
 
-- `Assets/Scripts/SpaceShooterGame.cs`: game state, spawning, scores, levels, UI, pause/resume.
-- `Assets/Scripts/PlayerController.cs`: movement, auto-aim shooting, HP, weapon upgrades, timed effects.
-- `Assets/Scripts/EnemyController.cs`: normal enemies.
-- `Assets/Scripts/BossController.cs`: a distinct Boss fight for every level.
-- `Assets/Scripts/BulletController.cs`: player and enemy projectiles.
-- `Assets/Scripts/AsteroidController.cs`: moving hazards.
-- `Assets/Scripts/PickupController.cs`: positive and negative pickup effects.
-- `Assets/Scripts/SpriteFactory.cs`: runtime-generated sprites.
-- `Assets/Scripts/StarfieldController.cs`: scrolling background stars.
-- `Assets/Editor/SpaceShooterSetup.cs`: creates and registers the demo scene in the Unity Editor.
+- \`Assets/Scripts/SpaceExplorerSceneController.cs\`: scene flow, backdrop, spawning, score, HUD, pause menu and transitions.
+- \`Assets/Scripts/SpaceExplorerPlayerController.cs\`: arrow-key movement, laser input and collision detection.
+- \`Assets/Scripts/SpaceExplorerAsteroidController.cs\`: random drifting, turning and boundary bouncing.
+- \`Assets/Scripts/SpaceExplorerStarController.cs\`: collectible stars and score reward.
+- \`Assets/Scripts/SpaceExplorerLaserController.cs\`: laser movement and asteroid hits.
+- \`Assets/Editor/SpaceExplorerSceneSetup.cs\`: creates the three assignment scenes and configures Build Settings.
+- \`Assets/Scripts/SpriteFactory.cs\`: loads Kenney sprites when available and provides procedural fallbacks.
 
-## Notes
+## Legacy prototype
 
-The art is intentionally procedural so the project works without importing external sprites. You can replace the generated sprites with your own artwork later while keeping the gameplay scripts. All score thresholds and timings are prototype defaults intended to be play-tested and balanced.
+The original \`Assets/Scenes/Main.unity\` scene and the \`SpaceShooterGame\` scripts remain available as the previous Space Shooter prototype. They are not used by the new assignment scenes. To play the assignment as intended, open **MainMenu.unity** or build with the provided Build Settings order.
+
+## Technical notes
+
+- Unity 2022.3 LTS or newer.
+- Built-in 2D physics; no third-party packages required.
+- The scene setup is editor-driven so all three scene files are created in the project and included in Build Settings.
