@@ -36,10 +36,7 @@ public static class SpaceExplorerSceneSetup
 
         string[] sceneNames = { "MainMenu", "Gameplay", "EndGame" };
         for (int i = 0; i < RequiredScenePaths.Length; i++)
-        {
-            if (!File.Exists(RequiredScenePaths[i]))
-                CreateScene(RequiredScenePaths[i], sceneNames[i]);
-        }
+            EnsureScene(RequiredScenePaths[i], sceneNames[i]);
 
         List<EditorBuildSettingsScene> buildScenes = new List<EditorBuildSettingsScene>();
         HashSet<string> added = new HashSet<string>();
@@ -65,16 +62,57 @@ public static class SpaceExplorerSceneSetup
         Debug.Log("Space Explorer assignment scenes are ready. MainMenu is the first Build Settings scene.");
     }
 
-    private static void CreateScene(string path, string sceneName)
+    private static void EnsureScene(string path, string sceneName)
     {
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        scene.name = sceneName;
-        GameObject root = new GameObject("SpaceExplorerSceneRoot");
-        root.AddComponent<SpaceExplorerSceneController>();
+        Scene originalActiveScene = SceneManager.GetActiveScene();
+        bool sceneAlreadyLoaded = false;
+        Scene scene = SceneManager.GetSceneByPath(path);
 
-        if (!EditorSceneManager.SaveScene(scene, path))
-            Debug.LogError("Could not save Space Explorer scene: " + path);
+        if (scene.IsValid() && scene.isLoaded)
+        {
+            sceneAlreadyLoaded = true;
+        }
+        else if (File.Exists(path))
+        {
+            scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+        }
+        else
+        {
+            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            scene.name = sceneName;
+        }
 
-        EditorSceneManager.CloseScene(scene, true);
+        bool sceneWasCreated = !File.Exists(path);
+        SceneManager.SetActiveScene(scene);
+
+        bool hasController = false;
+        foreach (GameObject rootObject in scene.GetRootGameObjects())
+        {
+            if (rootObject.GetComponentInChildren<SpaceExplorerSceneController>(true) != null)
+            {
+                hasController = true;
+                break;
+            }
+        }
+
+        if (!hasController)
+        {
+            GameObject root = new GameObject("SpaceExplorerSceneRoot");
+            SceneManager.MoveGameObjectToScene(root, scene);
+            root.AddComponent<SpaceExplorerSceneController>();
+        }
+
+        if (sceneWasCreated || !hasController)
+        {
+            if (!EditorSceneManager.SaveScene(scene, path))
+                Debug.LogError("Could not save Space Explorer scene: " + path);
+        }
+
+        // Only close scenes opened temporarily by this setup utility; don't close the user's active scene.
+        if (!sceneAlreadyLoaded)
+            EditorSceneManager.CloseScene(scene, true);
+
+        if (originalActiveScene.IsValid() && originalActiveScene.isLoaded)
+            SceneManager.SetActiveScene(originalActiveScene);
     }
 }
