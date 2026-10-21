@@ -356,28 +356,30 @@ public class SpaceExplorerSceneController : MonoBehaviour
         float x = (Screen.width - buttonWidth) * 0.5f;
         float y = Screen.height * 0.43f;
 
-        if (GUI.Button(new Rect(x, y, buttonWidth, buttonHeight), "PLAY", buttonStyle))
-            BeginNewRun();
-
-        if (GUI.Button(new Rect(x, y + buttonHeight + 14f * scale, buttonWidth, buttonHeight), "INSTRUCTIONS", buttonStyle))
-            showInstructions = !showInstructions;
-
-        if (showInstructions)
+        if (!showInstructions)
         {
-            float panelWidth = Mathf.Min(Screen.width - 32f, 600f * scale);
-            float panelHeight = 240f * scale;
-            Rect panel = new Rect((Screen.width - panelWidth) * 0.5f, Screen.height * 0.29f, panelWidth, panelHeight);
-            GUI.Box(panel, GUIContent.none);
-            GUI.Label(new Rect(panel.x + 22f, panel.y + 16f, panel.width - 44f, panel.height - 70f),
-                "ARROW KEYS  — Move the spaceship\n" +
-                "SPACE  — Shoot laser bolts\n" +
-                "COLLECT STARS  — Gain 10 points each\n" +
-                "HIT AN ASTEROID  — Lose 10 points and end the run\n" +
-                "ESC  — Pause or resume during gameplay", bodyStyle);
+            if (GUI.Button(new Rect(x, y, buttonWidth, buttonHeight), "PLAY", buttonStyle))
+                BeginNewRun();
 
-            if (GUI.Button(new Rect(panel.x + panel.width - 132f, panel.y + panel.height - 48f, 112f, 34f), "CLOSE", buttonStyle))
-                showInstructions = false;
+            if (GUI.Button(new Rect(x, y + buttonHeight + 14f * scale, buttonWidth, buttonHeight), "INSTRUCTIONS", buttonStyle))
+                showInstructions = true;
+
+            return;
         }
+
+        float panelWidth = Mathf.Min(Screen.width - 32f, 600f * scale);
+        float panelHeight = 240f * scale;
+        Rect panel = new Rect((Screen.width - panelWidth) * 0.5f, Screen.height * 0.29f, panelWidth, panelHeight);
+        GUI.Box(panel, GUIContent.none);
+        GUI.Label(new Rect(panel.x + 22f, panel.y + 16f, panel.width - 44f, panel.height - 70f),
+            "ARROW KEYS  — Move the spaceship\n" +
+            "SPACE  — Shoot laser bolts\n" +
+            "COLLECT STARS  — Gain 10 points each\n" +
+            "HIT AN ASTEROID  — Lose 10 points and end the run\n" +
+            "ESC  — Pause or resume during gameplay", bodyStyle);
+
+        if (GUI.Button(new Rect(panel.x + panel.width - 132f, panel.y + panel.height - 48f, 112f, 34f), "CLOSE", buttonStyle))
+            showInstructions = false;
     }
 
     private void DrawGameplayHud()
