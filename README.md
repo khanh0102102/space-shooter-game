@@ -43,7 +43,7 @@ Preserve the original file names and directory structure. For PNGs, select the f
 
 1. Clone the repository or download and extract its ZIP.
 2. In Unity Hub, add the project folder (the folder containing `Assets`, `Packages`, and `ProjectSettings`).
-3. Open the project with a supported Unity LTS Editor and wait for script compilation and asset import.
+3. Open the project with Unity 2022.3.76f1 (recommended) or another compatible patched LTS Editor, then wait for script compilation and asset import.
 4. The editor setup creates `Assets/Scenes/MainMenu.unity`, `Assets/Scenes/Gameplay.unity` and `Assets/Scenes/EndGame.unity`, then registers them in Build Settings. You can also run **Space Explorer → Create or Repair Assignment Scenes** from the Unity menu.
 5. Double-click `Assets/Scenes/MainMenu.unity` and press Play.
 
@@ -65,6 +65,6 @@ The original `Assets/Scenes/Main.unity` scene and the `SpaceShooterGame` scripts
 
 ## Technical notes
 
-- Unity 2022.3 LTS or newer.
+- Recommended Editor: Unity 2022.3.76f1 LTS (or another compatible patched LTS release).
 - Built-in 2D physics; no third-party packages required.
 - The scene setup is editor-driven so all three scene files are created in the project and included in Build Settings.
